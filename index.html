@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Туда-Сюда | Сервис поиска попутчиков</title>
+    <meta name="description" content="Сервис поиска попутчиков и совместных поездок. Безопасно, удобно, выгодно.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-brand h2 {
+            font-size: 1.5rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover, .nav-menu a.active {
+            color: #ff6b6b;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .delete-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-group input {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .ride-card {
+            background: #f9f9f9;
+            border-left: 4px solid #667eea;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .ride-info {
+            flex: 2;
+        }
+
+        .ride-route {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .ride-details {
+            display: flex;
+            gap: 1.5rem;
+            color: #666;
+            font-size: 0.9rem;
+            flex-wrap: wrap;
+        }
+
+        .ride-price {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+            margin: 0 1rem;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 3rem;
+            color: #999;
+        }
+
+        footer {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            margin-top: 3rem;
+            padding: 2rem 0 1rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .navbar .container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-menu {
+                gap: 1rem;
+            }
+            
+            .ride-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .ride-price {
+                margin: 0.5rem 0;
+            }
+            
+            .filter-group {
+                flex-direction: column;
+            }
+            
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h2>🚗 Туда-Сюда</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#" class="active">Главная</a></li>
+                <li><a href="#about">О проекте</a></li>
+                <li><a href="#contact">Контакты</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container">
+            <h1>Найди попутчика или поездку</h1>
+            <p>Тысячи поездок по всей России. Безопасно, удобно, выгодно.</p>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <section>
+                <div class="section-header">
+                    <h2>✏️ Предложить поездку</h2>
+                </div>
+                <form id="rideForm">
+                    <div class="form-group">
+                        <label>📍 Откуда</label>
+                        <input type="text" id="from" placeholder="Например: Москва" required>
+                    </div>
+                    <div class="form-group">
+                        <label>🎯 Куда</label>
+                        <input type="text" id="to" placeholder="Например: Санкт-Петербург" required>
+                    </div>
+                    <div class="form-group">
+                        <label>📅 Дата</label>
+                        <input type="date" id="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>👥 Мест</label>
+                        <input type="number" id="seats" min="1" max="8" required>
+                    </div>
+                    <div class="form-group">
+                        <label>💰 Цена (₽)</label>
+                        <input type="number" id="price" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>📞 Телефон</label>
+                        <input type="tel" id="phone" placeholder="+7 (XXX) XXX-XX-XX" required>
+                    </div>
+                    <button type="submit" class="btn-primary">➕ Добавить поездку</button>
+                </form>
+            </section>
+
+            <section>
+                <h3>🔍 Поиск поездок</h3>
+                <div class="filter-group">
+                    <input type="text" id="filterFrom" placeholder="Откуда">
+                    <input type="text" id="filterTo" placeholder="Куда">
+                    <input type="date" id="filterDate">
+                    <button id="searchBtn" class="btn-secondary">🔎 Найти</button>
+                    <button id="resetBtn" class="btn-outline">🔄 Сбросить</button>
+                </div>
+            </section>
+
+            <section>
+                <div class="section-header">
+                    <h2>🚙 Доступные поездки</h2>
+                    <span id="ridesCount">0 поездок</span>
+                </div>
+                <div id="ridesContainer">
+                    <div class="empty-message">Загрузка...</div>
+                </div>
+            </section>
+
+            <section id="about">
+                <h2>📖 О проекте "Туда-Сюда"</h2>
+                <p><strong>Миссия:</strong> Сделать путешествия по России доступными, удобными и безопасными.</p>
+                <p><strong>Возможности:</strong> Бесплатное добавление поездок, удобный поиск, прямой контакт с водителем.</p>
+                <p><strong>Технологии:</strong> HTML5, CSS3, JavaScript, LocalStorage.</p>
+                <p><strong>Разработчик:</strong> Студент, ИНГГУ Барахоев Исмаил, 2025</p>
+            </section>
+
+            <section id="contact">
+                <h2>📞 Контакты</h2>
+                <p>📞 Горячая линия: <strong>8-800-555-35-35</strong><br>
+                   📱 Мобильный: <strong>8-989-333-59-79</strong></p>
+                <p>✉️ Email: <strong>info@tuda-suda.ru</strong><br>
+                   📧 Личная почта: <strong>barahoevismail19@gmail.com</strong></p>
+                <p>💬 Telegram: <strong>@tuda_suda_bot</strong><br>
+                   👤 Личный Telegram: <strong>@barakhoev10</strong></p>
+                <p>📍 Офис в Москве: <strong>г. Москва, ул. Программистов, д. 42</strong><br>
+                   🏢 Офис в Назрани: <strong>г. Назрань, ул. Московская, 1</strong></p>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <h4>🚗 Туда-Сюда</h4>
+                    <p>Сервис поиска попутчиков</p>
+                </div>
+                <div>
+                    <h4>Контакты</h4>
+                    <p>8-989-333-59-79</p>
+                    <p>barahoevismail19@gmail.com</p>
+                </div>
+                <div>
+                    <h4>Соцсети</h4>
+                    <p>Telegram: @barakhoev10</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Туда-Сюда. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let rides = [];
+
+        function loadRides() {
+            const saved = localStorage.getItem('tudaSudaRides');
+            if (saved) {
+                rides = JSON.parse(saved);
+            } else {
+                rides = [
+                    { id: Date.now() + 1, from: "Москва", to: "Санкт-Петербург", date: "2025-01-25", seats: 3, price: 1500, phone: "+7 (999) 123-45-67", createdAt: new Date().toISOString() },
+                    { id: Date.now() + 2, from: "Казань", to: "Нижний Новгород", date: "2025-01-20", seats: 2, price: 800, phone: "+7 (988) 765-43-21", createdAt: new Date().toISOString() },
+                    { id: Date.now() + 3, from: "Екатеринбург", to: "Тюмень", date: "2025-01-22", seats: 4, price: 600, phone: "+7 (922) 111-22-33", createdAt: new Date().toISOString() }
+                ];
+                saveRides();
+            }
+            renderRides();
+        }
+
+        function saveRides() {
+            localStorage.setItem('tudaSudaRides', JSON.stringify(rides));
+        }
+
+        function addRide(from, to, date, seats, price, phone) {
+            const newRide = {
+                id: Date.now() + Math.random(),
+                from: from.trim(),
+                to: to.trim(),
+                date: date,
+                seats: parseInt(seats),
+                price: parseInt(price),
+                phone: phone.trim(),
+                createdAt: new Date().toISOString()
+            };
+            rides.push(newRide);
+            rides.sort((a, b) => new Date(a.date) - new Date(b.date));
+            saveRides();
+            renderRides();
+        }
+
+        function deleteRide(id) {
+            rides = rides.filter(ride => ride.id !== id);
+            saveRides();
+            renderRides();
+        }
+
+        function filterRides(from, to, date) {
+            return rides.filter(ride => {
+                if (from && !ride.from.toLowerCase().includes(from.toLowerCase())) return false;
+                if (to && !ride.to.toLowerCase().includes(to.toLowerCase())) return false;
+                if (date && ride.date !== date) return false;
+                return true;
+            });
+        }
+
+        function formatDate(dateStr) {
+            return new Date(dateStr).toLocaleDateString('ru-RU');
+        }
+
+        function getSeatsWord(count) {
+            if (count % 10 === 1 && count % 100 !== 11) return 'место';
+            if ([2,3,4].includes(count % 10) && ![12,13,14].includes(count % 100)) return 'места';
+            return 'мест';
+        }
+
+        function getRidesWord(count) {
+            if (count % 10 === 1 && count % 100 !== 11) return 'поездка';
+            if ([2,3,4].includes(count % 10) && ![12,13,14].includes(count % 100)) return 'поездки';
+            return 'поездок';
+        }
+
+        function renderRides(filterFrom = '', filterTo = '', filterDate = '') {
+            const container = document.getElementById('ridesContainer');
+            let filteredRides = filterRides(filterFrom, filterTo, filterDate);
+            
+            const countSpan = document.getElementById('ridesCount');
+            if (countSpan) {
+                countSpan.textContent = `${filteredRides.length} ${getRidesWord(filteredRides.length)}`;
+            }
+            
+            if (filteredRides.length === 0) {
+                container.innerHTML = '<div class="empty-message">😔 Поездок не найдено<br><small>Попробуйте изменить параметры поиска или добавьте новую поездку</small></div>';
+                return;
+            }
+            
+            container.innerHTML = filteredRides.map(ride => `
+                <div class="ride-card">
+                    <div class="ride-info">
+                        <div class="ride-route">🚗 ${ride.from} → ${ride.to}</div>
+                        <div class="ride-details">
+                            <span>📅 ${formatDate(ride.date)}</span>
+                            <span>👥 ${ride.seats} ${getSeatsWord(ride.seats)}</span>
+                        </div>
+                        <div class="ride-details">📞 ${ride.phone}</div>
+                    </div>
+                    <div class="ride-price">${ride.price.toLocaleString()} ₽</div>
+                    <button class="delete-btn" onclick="deleteRide(${ride.id})">🗑 Удалить</button>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('rideForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const from = document.getElementById('from').value;
+            const to = document.getElementById('to').value;
+            const date = document.getElementById('date').value;
+            const seats = document.getElementById('seats').value;
+            const price = document.getElementById('price').value;
+            const phone = document.getElementById('phone').value;
+            
+            if (from && to && date && seats && price && phone) {
+                addRide(from, to, date, seats, price, phone);
+                e.target.reset();
+                alert('Поездка добавлена!');
+                document.getElementById('filterFrom').value = '';
+                document.getElementById('filterTo').value = '';
+                document.getElementById('filterDate').value = '';
+                renderRides();
+            }
+        });
+
+        document.getElementById('searchBtn').addEventListener('click', () => {
+            renderRides(
+                document.getElementById('filterFrom').value,
+                document.getElementById('filterTo').value,
+                document.getElementById('filterDate').value
+            );
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            document.getElementById('filterFrom').value = '';
+            document.getElementById('filterTo').value = '';
+            document.getElementById('filterDate').value = '';
+            renderRides();
+        });
+
+        loadRides();
+    </script>
+</body>
+</html>
